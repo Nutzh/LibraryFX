@@ -1,0 +1,15 @@
+# Java + Maven ignores
+target/
+*.class
+*.log
+
+# IDE
+/.idea/
+/.vscode/
+/out/
+/*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
