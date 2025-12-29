@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" 
+            xmlns:fx="http://javafx.com/fxml" 
+            fx:controller="com.library.app.controller.LivreController">
+    
+    <top>
+        <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 20;">
+            <Label text="Gestion des Livres" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;" />
+            <Label text="Module de gestion du catalogue de livres" style="-fx-text-fill: #ecf0f1;" />
+        </VBox>
+    </top>
+    
+    <center>
+        <VBox spacing="20" style="-fx-padding: 20;">
+            
+            <!-- Formulaire -->
+            <GridPane hgap="10" vgap="10" style="-fx-padding: 15; -fx-background-color: white; -fx-border-color: #ddd;">
+                <Label text="Formulaire Livre" GridPane.columnIndex="0" GridPane.rowIndex="0" 
+                       GridPane.columnSpan="4" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                
+                <Label text="Titre:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <TextField fx:id="titreField" GridPane.columnIndex="1" GridPane.rowIndex="1" 
+                           GridPane.columnSpan="3" />
+                
+                <Label text="Auteur:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField fx:id="auteurField" GridPane.columnIndex="1" GridPane.rowIndex="2" 
+                           GridPane.columnSpan="3" />
+                
+                <Label text="Année:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <TextField fx:id="anneeField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                
+                <Label text="ISBN:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                <TextField fx:id="isbnField" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                
+                <HBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="4" 
+                      GridPane.columnSpan="4" style="-fx-padding: 10 0 0 0;">
+                    <Button text="Ajouter" onAction="#handleAjouterLivre" 
+                            style="-fx-background-color: #27ae60; -fx-text-fill: white;" />
+                    <Button text="Modifier" onAction="#handleModifierLivre" 
+                            style="-fx-background-color: #f39c12; -fx-text-fill: white;" />
+                    <Button text="Supprimer" onAction="#handleSupprimerLivre" 
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white;" />
+                    <Button text="Effacer" onAction="#handleClearFields" 
+                            style="-fx-background-color: #7f8c8d; -fx-text-fill: white;" />
+                </HBox>
+            </GridPane>
+            
+            <!-- Recherche -->
+            <GridPane hgap="10" vgap="10" style="-fx-padding: 15; -fx-background-color: white; -fx-border-color: #ddd;">
+                <Label text="Recherche" GridPane.columnIndex="0" GridPane.rowIndex="0" 
+                       style="-fx-font-weight: bold;" />
+                
+                <ComboBox fx:id="searchCriteria" GridPane.columnIndex="1" GridPane.rowIndex="0" 
+                          prefWidth="120" />
+                <TextField fx:id="searchField" GridPane.columnIndex="2" GridPane.rowIndex="0" 
+                           promptText="Mot-clé..." />
+                <HBox spacing="10" GridPane.columnIndex="3" GridPane.rowIndex="0">
+                    <Button text="Rechercher" onAction="#handleRechercher" 
+                            style="-fx-background-color: #3498db; -fx-text-fill: white;" />
+                    <Button text="Disponibles" onAction="#handleAfficherDisponibles" 
+                            style="-fx-background-color: #9b59b6; -fx-text-fill: white;" />
+                    <Button text="Tous" onAction="#handleRechercher" />
+                </HBox>
+                
+                <Label fx:id="messageLabel" GridPane.columnIndex="0" GridPane.rowIndex="1" 
+                       GridPane.columnSpan="4" />
+            </GridPane>
+            
+            <!-- Table -->
+            <VBox spacing="10">
+                <Label text="Liste des Livres" style="-fx-font-weight: bold;" />
+                <TableView fx:id="livresTable" onMouseClicked="#handleTableSelection">
+                    <columns>
+                        <TableColumn fx:id="idColumn" text="ID" prefWidth="80" />
+                        <TableColumn fx:id="titreColumn" text="Titre" prefWidth="250" />
+                        <TableColumn fx:id="auteurColumn" text="Auteur" prefWidth="150" />
+                        <TableColumn fx:id="anneeColumn" text="Année" prefWidth="80" />
+                        <TableColumn fx:id="isbnColumn" text="ISBN" prefWidth="150" />
+                        <TableColumn fx:id="disponibleColumn" text="Disponible" prefWidth="100" />
+                    </columns>
+                </TableView>
+            </VBox>
+            
+        </VBox>
+    </center>
+    
+</BorderPane>
