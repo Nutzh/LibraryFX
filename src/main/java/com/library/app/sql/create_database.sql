@@ -1,0 +1,18 @@
+CREATE DATABASE IF NOT EXISTS library_db;
+USE library_db;
+
+/* TABLE LIVRE — brahim */
+CREATE TABLE livre (
+    id INT PRIMARY KEY AUTO_INCREMENT
+    
+);
+
+/* TABLE MEMBRE — hatim */
+CREATE TABLE membre (
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
+
+/* TABLE EMPRUNT — hakim */
+CREATE TABLE emprunt (
+    id INT PRIMARY KEY AUTO_INCREMENT
+);
