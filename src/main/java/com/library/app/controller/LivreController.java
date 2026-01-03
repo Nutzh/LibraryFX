@@ -1,7 +1,8 @@
 package com.library.app.controller;
-
 import com.library.app.model.Livre;
 import com.library.app.service.BibliothequeService;
+import com.library.app.exception.ValidationException;
+import com.library.app.exception.LivreIndisponibleException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,219 +10,122 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class LivreController {
+    @FXML private TableView<Livre> livresTable;
+    @FXML private TableColumn<Livre, String> titreColumn, auteurColumn, isbnColumn;
+    @FXML private TableColumn<Livre, Integer> anneeColumn;
+    @FXML private TableColumn<Livre, Boolean> disponibleColumn;
+    @FXML private TextField titreField, auteurField, anneeField, isbnField, searchField;
+    @FXML private ComboBox<String> searchCriteria;
+    @FXML private Label statsLabel;
     
-    @FXML
-    private TableView<Livre> livresTable;
-    
-    @FXML
-    private TableColumn<Livre, String> idColumn;
-    
-    @FXML
-    private TableColumn<Livre, String> titreColumn;
-    
-    @FXML
-    private TableColumn<Livre, String> auteurColumn;
-    
-    @FXML
-    private TableColumn<Livre, Integer> anneeColumn;
-    
-    @FXML
-    private TableColumn<Livre, String> isbnColumn;
-    
-    @FXML
-    private TableColumn<Livre, Boolean> disponibleColumn;
-    
-    @FXML
-    private TextField titreField;
-    
-    @FXML
-    private TextField auteurField;
-    
-    @FXML
-    private TextField anneeField;
-    
-    @FXML
-    private TextField isbnField;
-    
-    @FXML
-    private TextField searchField;
-    
-    @FXML
-    private ComboBox<String> searchCriteria;
-    
-    @FXML
-    private Label messageLabel;
-    
-    private BibliothequeService bibliothequeService;
-    private ObservableList<Livre> livresList;
+    private BibliothequeService service = new BibliothequeService();
+    private ObservableList<Livre> livresList = FXCollections.observableArrayList();
     
     @FXML
     public void initialize() {
-        bibliothequeService = new BibliothequeService();
-        livresList = FXCollections.observableArrayList();
-        
-        configureTableView();
-        
-        searchCriteria.getItems().addAll("Tous", "Titre", "Auteur", "ISBN");
-        searchCriteria.setValue("Tous");
-        
-        loadAllLivres();
-    }
-    
-    private void configureTableView() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         titreColumn.setCellValueFactory(new PropertyValueFactory<>("titre"));
         auteurColumn.setCellValueFactory(new PropertyValueFactory<>("auteur"));
         anneeColumn.setCellValueFactory(new PropertyValueFactory<>("anneePublication"));
         isbnColumn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
         disponibleColumn.setCellValueFactory(new PropertyValueFactory<>("disponible"));
-        
-        disponibleColumn.setCellFactory(column -> new TableCell<Livre, Boolean>() {
-            @Override
-            protected void updateItem(Boolean item, boolean empty) {
+        disponibleColumn.setCellFactory(col -> new TableCell<Livre, Boolean>() {
+            @Override protected void updateItem(Boolean item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    setText(item ? "Oui" : "Non");
-                }
+                setText(empty || item == null ? "" : item ? "Oui" : "Non");
             }
         });
         
+        searchCriteria.getItems().addAll("Tous", "Titre", "Auteur", "ISBN");
+        searchCriteria.setValue("Tous");
         livresTable.setItems(livresList);
-        livresTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        loadLivres();
     }
     
-    private void loadAllLivres() {
+    private void loadLivres() {
         livresList.clear();
-        livresList.addAll(bibliothequeService.getAllLivres());
-        messageLabel.setText("Total: " + livresList.size() + " livre(s)");
+        livresList.addAll(service.getAllLivres());
+        updateStats();
+    }
+    
+    private void updateStats() {
+        long total = livresList.size();
+        long disponibles = livresList.stream().filter(Livre::isDisponible).count();
+        statsLabel.setText("Total: " + total + " | Disponibles: " + disponibles);
     }
     
     @FXML
     private void handleAjouterLivre() {
         try {
-            if (titreField.getText().trim().isEmpty() ||
-                auteurField.getText().trim().isEmpty() ||
-                anneeField.getText().trim().isEmpty() ||
-                isbnField.getText().trim().isEmpty()) {
-                showMessage("Veuillez remplir tous les champs", Alert.AlertType.WARNING);
-                return;
-            }
-            
             Livre livre = new Livre();
-            livre.setTitre(titreField.getText().trim());
-            livre.setAuteur(auteurField.getText().trim());
-            
-            try {
-                livre.setAnneePublication(Integer.parseInt(anneeField.getText().trim()));
-            } catch (NumberFormatException e) {
-                showMessage("L'année doit être un nombre valide", Alert.AlertType.ERROR);
-                return;
-            }
-            
-            livre.setIsbn(isbnField.getText().trim());
-            
-            bibliothequeService.ajouterLivre(livre);
-            loadAllLivres();
+            livre.setTitre(titreField.getText());
+            livre.setAuteur(auteurField.getText());
+            livre.setAnneePublication(Integer.parseInt(anneeField.getText()));
+            livre.setIsbn(isbnField.getText());
+            service.ajouterLivre(livre);
             clearFields();
-            
-            showMessage("Livre ajouté avec succès", Alert.AlertType.INFORMATION);
-            
-        } catch (Exception e) {
-            showMessage("Erreur: " + e.getMessage(), Alert.AlertType.ERROR);
+            loadLivres();
+            showAlert("Succès", "Livre ajouté", Alert.AlertType.INFORMATION);
+        } catch (ValidationException e) {
+            showAlert("Erreur", e.getMessage(), Alert.AlertType.ERROR);
+        } catch (NumberFormatException e) {
+            showAlert("Erreur", "Année invalide", Alert.AlertType.ERROR);
         }
     }
     
     @FXML
     private void handleModifierLivre() {
-        Livre livreSelectionne = livresTable.getSelectionModel().getSelectedItem();
-        
-        if (livreSelectionne == null) {
-            showMessage("Veuillez sélectionner un livre à modifier", Alert.AlertType.WARNING);
+        Livre selected = livresTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Avertissement", "Sélectionnez un livre", Alert.AlertType.WARNING);
             return;
         }
-        
         try {
-            livreSelectionne.setTitre(titreField.getText().trim());
-            livreSelectionne.setAuteur(auteurField.getText().trim());
-            
-            try {
-                livreSelectionne.setAnneePublication(Integer.parseInt(anneeField.getText().trim()));
-            } catch (NumberFormatException e) {
-                showMessage("L'année doit être un nombre valide", Alert.AlertType.ERROR);
-                return;
-            }
-            
-            livreSelectionne.setIsbn(isbnField.getText().trim());
-            
-            bibliothequeService.modifierLivre(livreSelectionne);
-            loadAllLivres();
-            
-            showMessage("Livre modifié avec succès", Alert.AlertType.INFORMATION);
-            
-        } catch (Exception e) {
-            showMessage("Erreur: " + e.getMessage(), Alert.AlertType.ERROR);
+            selected.setTitre(titreField.getText());
+            selected.setAuteur(auteurField.getText());
+            selected.setAnneePublication(Integer.parseInt(anneeField.getText()));
+            selected.setIsbn(isbnField.getText());
+            service.modifierLivre(selected);
+            loadLivres();
+            showAlert("Succès", "Livre modifié", Alert.AlertType.INFORMATION);
+        } catch (ValidationException e) {
+            showAlert("Erreur", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
     
     @FXML
     private void handleSupprimerLivre() {
-        Livre livreSelectionne = livresTable.getSelectionModel().getSelectedItem();
-        
-        if (livreSelectionne == null) {
-            showMessage("Veuillez sélectionner un livre à supprimer", Alert.AlertType.WARNING);
+        Livre selected = livresTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showAlert("Avertissement", "Sélectionnez un livre", Alert.AlertType.WARNING);
             return;
         }
-        
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation de suppression");
-        alert.setHeaderText("Supprimer le livre");
-        alert.setContentText("Êtes-vous sûr de vouloir supprimer le livre : " + livreSelectionne.getTitre() + " ?");
-        
-        if (alert.showAndWait().get() == ButtonType.OK) {
-            try {
-                bibliothequeService.supprimerLivre(livreSelectionne.getId());
-                loadAllLivres();
-                clearFields();
-                showMessage("Livre supprimé avec succès", Alert.AlertType.INFORMATION);
-            } catch (Exception e) {
-                showMessage("Erreur: " + e.getMessage(), Alert.AlertType.ERROR);
-            }
+        try {
+            service.supprimerLivre(selected.getId());
+            clearFields();
+            loadLivres();
+            showAlert("Succès", "Livre supprimé", Alert.AlertType.INFORMATION);
+        } catch (ValidationException | LivreIndisponibleException e) {
+            showAlert("Erreur", e.getMessage(), Alert.AlertType.ERROR);
         }
     }
     
     @FXML
     private void handleRechercher() {
         String critere = searchCriteria.getValue();
-        String valeur = searchField.getText().trim();
-        
+        String valeur = searchField.getText();
         livresList.clear();
-        
-        if (critere.equals("Tous") || valeur.isEmpty()) {
-            loadAllLivres();
-        } else {
-            livresList.addAll(bibliothequeService.rechercherLivres(critere, valeur));
-            messageLabel.setText("Résultats: " + livresList.size() + " livre(s) trouvé(s)");
-        }
-    }
-    
-    @FXML
-    private void handleAfficherDisponibles() {
-        livresList.clear();
-        livresList.addAll(bibliothequeService.getLivresDisponibles());
-        messageLabel.setText("Livres disponibles: " + livresList.size());
+        livresList.addAll(service.rechercherLivres(critere, valeur));
+        updateStats();
     }
     
     @FXML
     private void handleTableSelection() {
-        Livre livreSelectionne = livresTable.getSelectionModel().getSelectedItem();
-        
-        if (livreSelectionne != null) {
-            titreField.setText(livreSelectionne.getTitre());
-            auteurField.setText(livreSelectionne.getAuteur());
-            anneeField.setText(String.valueOf(livreSelectionne.getAnneePublication()));
-            isbnField.setText(livreSelectionne.getIsbn());
+        Livre selected = livresTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            titreField.setText(selected.getTitre());
+            auteurField.setText(selected.getAuteur());
+            anneeField.setText(String.valueOf(selected.getAnneePublication()));
+            isbnField.setText(selected.getIsbn());
         }
     }
     
@@ -238,10 +142,9 @@ public class LivreController {
         isbnField.clear();
     }
     
-    private void showMessage(String message, Alert.AlertType type) {
+    private void showAlert(String titre, String message, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle(type.toString());
-        alert.setHeaderText(null);
+        alert.setTitle(titre);
         alert.setContentText(message);
         alert.showAndWait();
     }

@@ -1,5 +1,4 @@
 package com.library.app.model;
-
 import java.time.LocalDate;
 
 public class Livre extends Document implements Empruntable {
@@ -9,19 +8,9 @@ public class Livre extends Document implements Empruntable {
     private boolean disponible;
     
     public Livre() {
-        super();
         this.disponible = true;
     }
     
-    public Livre(String id, String titre, String auteur, int anneePublication, String isbn) {
-        super(id, titre);
-        this.auteur = auteur;
-        this.anneePublication = anneePublication;
-        this.isbn = isbn;
-        this.disponible = true;
-    }
-    
-    // Implémentation de l'interface Empruntable
     @Override
     public boolean peutEtreEmprunte() {
         return disponible;
@@ -29,11 +18,7 @@ public class Livre extends Document implements Empruntable {
     
     @Override
     public void emprunter() {
-        if (disponible) {
-            disponible = false;
-        } else {
-            throw new IllegalStateException("Le livre n'est pas disponible");
-        }
+        disponible = false;
     }
     
     @Override
@@ -48,11 +33,15 @@ public class Livre extends Document implements Empruntable {
     
     @Override
     public double calculerPenaliteRetard(LocalDate dateRetourEffective) {
-        // À implémenter plus tard
-        return 0.0;
+        if (dateRetourEffective == null) return 0;
+        LocalDate aujourdhui = LocalDate.now();
+        if (dateRetourEffective.isBefore(aujourdhui)) {
+            long joursRetard = java.time.temporal.ChronoUnit.DAYS.between(dateRetourEffective, aujourdhui);
+            return joursRetard * 5.0; // 5 DH par jour de retard
+        }
+        return 0;
     }
     
-    // Getters et setters
     public String getAuteur() {
         return auteur;
     }
@@ -79,17 +68,5 @@ public class Livre extends Document implements Empruntable {
     
     public void setDisponible(boolean disponible) {
         this.disponible = disponible;
-    }
-    
-    @Override
-    public String toString() {
-        return "Livre{" +
-               "id='" + id + '\'' +
-               ", titre='" + titre + '\'' +
-               ", auteur='" + auteur + '\'' +
-               ", anneePublication=" + anneePublication +
-               ", isbn='" + isbn + '\'' +
-               ", disponible=" + disponible +
-               '}';
     }
 }

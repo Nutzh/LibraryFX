@@ -13,7 +13,6 @@ public abstract class Document {
         this.titre = titre;
     }
     
-    // Getters et setters
     public String getId() {
         return id;
     }
@@ -30,6 +29,5 @@ public abstract class Document {
         this.titre = titre;
     }
     
-    // Méthode abstraite pour calculer les pénalités
     public abstract double calculerPenaliteRetard(LocalDate dateRetourEffective);
 }

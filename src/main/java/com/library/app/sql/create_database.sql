@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS livres (
     isbn VARCHAR(20) UNIQUE NOT NULL,
     disponible BOOLEAN DEFAULT TRUE
 );
+-- Données de test pour les livres
+INSERT INTO livres (id, titre, auteur, annee_publication, isbn, disponible) VALUES
+('LIV001', 'Le Petit Prince', 'Antoine de Saint-Exupéry', 1943, '978-2070612758', TRUE),
+('LIV002', '1984', 'George Orwell', 1949, '978-2070368228', TRUE),
+('LIV003', 'L\'Étranger', 'Albert Camus', 1942, '978-2070360024', FALSE),
+('LIV004', 'Harry Potter à l\'école des sorciers', 'J.K. Rowling', 1997, '978-2070643029', TRUE);
 
 /* TABLE MEMBRES — hatim */
 CREATE TABLE IF NOT EXISTS membres (

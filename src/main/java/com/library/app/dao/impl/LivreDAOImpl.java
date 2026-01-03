@@ -11,7 +11,6 @@ public class LivreDAOImpl implements LivreDAO {
     private Connection connection;
     
     public LivreDAOImpl() {
-        // Utilise la méthode statique getConnection()
         this.connection = DatabaseConnection.getConnection();
     }
     
