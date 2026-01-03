@@ -29,5 +29,5 @@ public abstract class Document {
         this.titre = titre;
     }
     
-    public abstract double calculerPenaliteRetard(LocalDate dateRetourEffective);
+    public abstract double calculerPenaliteRetard(LocalDate dateRetourPrevue, LocalDate dateRetourEffective);
 }

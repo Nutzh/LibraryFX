@@ -32,11 +32,10 @@ public class Livre extends Document implements Empruntable {
     }
     
     @Override
-    public double calculerPenaliteRetard(LocalDate dateRetourPrevue) {
+    public double calculerPenaliteRetard(LocalDate dateRetourPrevue,LocalDate dateRetourEffective) {
         if (dateRetourPrevue == null) return 0;
-        LocalDate aujourdhui = LocalDate.now();
-        if (dateRetourPrevue.isBefore(aujourdhui)) {
-            long joursRetard = java.time.temporal.ChronoUnit.DAYS.between(dateRetourPrevue, aujourdhui);
+        if (dateRetourPrevue.isBefore(dateRetourEffective)) {
+            long joursRetard = java.time.temporal.ChronoUnit.DAYS.between(dateRetourPrevue, dateRetourEffective);
             return joursRetard * 5.0; // 5 DH par jour de retard
         }
         return 0;
