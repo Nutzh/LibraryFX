@@ -1,13 +1,13 @@
 package com.library.app.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Emprunt {
 
     private int id;
-    private Date dateEmprunt;
-    private Date dateRetourPrevue;
-    private Date dateRetourEffective;
+    private LocalDate dateEmprunt;
+    private LocalDate dateRetourPrevue;
+    private LocalDate dateRetourEffective;
 
     private Livre livre;
     private Membre membre;
@@ -17,18 +17,18 @@ public class Emprunt {
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
-    public Date getDateEmprunt() { return dateEmprunt; }
-    public void setDateEmprunt(Date dateEmprunt) {
+    public LocalDate getDateEmprunt() { return dateEmprunt; }
+    public void setDateEmprunt(LocalDate dateEmprunt) {
         this.dateEmprunt = dateEmprunt;
     }
 
-    public Date getDateRetourPrevue() { return dateRetourPrevue; }
-    public void setDateRetourPrevue(Date dateRetourPrevue) {
+    public LocalDate getDateRetourPrevue() { return dateRetourPrevue; }
+    public void setDateRetourPrevue(LocalDate dateRetourPrevue) {
         this.dateRetourPrevue = dateRetourPrevue;
     }
 
-    public Date getDateRetourEffective() { return dateRetourEffective; }
-    public void setDateRetourEffective(Date dateRetourEffective) {
+    public LocalDate getDateRetourEffective() { return dateRetourEffective; }
+    public void setDateRetourEffective(LocalDate dateRetourEffective) {
         this.dateRetourEffective = dateRetourEffective;
     }
 
