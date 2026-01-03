@@ -4,8 +4,7 @@ import com.library.app.model.Emprunt;
 import com.library.app.model.Livre;
 import com.library.app.model.Membre;
 import com.library.app.service.EmpruntService;
-import com.library.app.service.LivreService;
-import com.library.app.service.MembreService;
+import com.library.app.service.BibliothequeService;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -24,8 +23,7 @@ public class EmpruntController {
     @FXML private TableColumn<Emprunt, String> colDateRetour;
 
     private final EmpruntService empruntService = new EmpruntService();
-    private final LivreService livreService = new LivreService();
-    private final MembreService membreService = new MembreService();
+    private final BibliothequeService livreService = new BibliothequeService();
 
     private final ObservableList<Emprunt> emprunts =
             FXCollections.observableArrayList();
@@ -61,8 +59,8 @@ public class EmpruntController {
             int livreId = Integer.parseInt(txtLivreId.getText());
             int membreId = Integer.parseInt(txtMembreId.getText());
 
-            Livre livre = livreService.findById(livreId);
-            Membre membre = membreService.findById(membreId);
+            Livre livre = BibliothequeService.rechercherLivres(livreId);
+            Membre membre = BibliothequeService.rechercherMembre(membreId);
 
             empruntService.emprunterLivre(livre, membre);
 
