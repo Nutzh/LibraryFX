@@ -35,6 +35,23 @@ INSERT INTO membres (nom, prenom, email, actif) VALUES
 
 
 /* TABLE EMPRUNT — hakim */
-CREATE TABLE emprunt (
-    id INT PRIMARY KEY AUTO_INCREMENT
+CREATE TABLE emprunts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    livre_id INT NOT NULL,
+    membre_id INT NOT NULL,
+
+    date_emprunt DATE NOT NULL,
+    date_retour_prevue DATE NOT NULL,
+    date_retour_effective DATE,
+
+    CONSTRAINT fk_emprunt_livre
+        FOREIGN KEY (livre_id)
+        REFERENCES livres(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_emprunt_membre
+        FOREIGN KEY (membre_id)
+        REFERENCES membres(id)
+        ON DELETE CASCADE
 );
