@@ -2,13 +2,17 @@ package com.library.app.controller;
 
 import com.library.app.model.Membre;
 import com.library.app.model.Emprunt;
-import com.library.app.service.BibliothequeService;
+import com.library.app.dao.MembreDAO;
+import com.library.app.dao.EmpruntDAO;
+import com.library.app.dao.impl.MembreDAOImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Contrôleur pour la gestion des membres
@@ -75,14 +79,57 @@ public class MembreController {
     @FXML
     private Label messageLabel;
     
-    private BibliothequeService bibliothequeService;
+    private MembreDAO membreDAO;
+    private EmpruntDAO empruntDAO;
     private ObservableList<Membre> membresList;
     private ObservableList<Emprunt> historiqueList;
     private Membre membreSelectionne;
     
     @FXML
     public void initialize() {
-        bibliothequeService = new BibliothequeService();
+        membreDAO = new MembreDAOImpl();
+        // Implémentation basique de EmpruntDAO jusqu'à ce que EmpruntDAOImpl soit complété
+        empruntDAO = new EmpruntDAO() {
+            @Override
+            public void save(Emprunt emprunt) {
+                // À implémenter dans EmpruntDAOImpl
+            }
+            
+            @Override
+            public Emprunt findById(int id) {
+                // À implémenter dans EmpruntDAOImpl
+                return null;
+            }
+            
+            @Override
+            public List<Emprunt> findAll() {
+                // À implémenter dans EmpruntDAOImpl
+                return new java.util.ArrayList<>();
+            }
+            
+            @Override
+            public List<Emprunt> findByMembre(int membreId) {
+                // À implémenter dans EmpruntDAOImpl
+                return new java.util.ArrayList<>();
+            }
+            
+            @Override
+            public List<Emprunt> findEnCours() {
+                // À implémenter dans EmpruntDAOImpl
+                return new java.util.ArrayList<>();
+            }
+            
+            @Override
+            public int countEmpruntsEnCours(int membreId) {
+                // À implémenter dans EmpruntDAOImpl
+                return 0;
+            }
+            
+            @Override
+            public void update(Emprunt emprunt) {
+                // À implémenter dans EmpruntDAOImpl
+            }
+        };
         membresList = FXCollections.observableArrayList();
         historiqueList = FXCollections.observableArrayList();
         
@@ -195,7 +242,7 @@ public class MembreController {
     private void loadAllMembres() {
         try {
             membresList.clear();
-            membresList.addAll(bibliothequeService.rechercherMembres(""));
+            membresList.addAll(membreDAO.findAll());
             messageLabel.setText("Total: " + membresList.size() + " membre(s)");
         } catch (SQLException e) {
             showMessage("Erreur lors du chargement: " + e.getMessage(), Alert.AlertType.ERROR);
@@ -208,8 +255,11 @@ public class MembreController {
     private void loadHistorique(int membreId) {
         try {
             historiqueList.clear();
-            historiqueList.addAll(bibliothequeService.getHistorique(membreId));
-        } catch (SQLException e) {
+            List<Emprunt> emprunts = empruntDAO.findByMembre(membreId);
+            if (emprunts != null) {
+                historiqueList.addAll(emprunts);
+            }
+        } catch (Exception e) {
             showMessage("Erreur lors du chargement de l'historique: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
@@ -240,7 +290,8 @@ public class MembreController {
                 return;
             }
             
-            bibliothequeService.ajouterMembre(nom, prenom, email);
+            Membre nouveauMembre = new Membre(nom, prenom, email, true);
+            membreDAO.save(nouveauMembre);
             loadAllMembres();
             clearFields();
             showMessage("Membre ajouté avec succès", Alert.AlertType.INFORMATION);
@@ -270,7 +321,10 @@ public class MembreController {
                 return;
             }
             
-            bibliothequeService.modifierMembre(membreSelectionne.getId(), nom, prenom, email);
+            membreSelectionne.setNom(nom);
+            membreSelectionne.setPrenom(prenom);
+            membreSelectionne.setEmail(email);
+            membreDAO.update(membreSelectionne);
             loadAllMembres();
             clearFields();
             membreSelectionne = null;
@@ -299,7 +353,7 @@ public class MembreController {
         
         if (alert.showAndWait().get() == ButtonType.OK) {
             try {
-                bibliothequeService.supprimerMembre(membreSelectionne.getId());
+                membreDAO.delete(String.valueOf(membreSelectionne.getId()));
                 loadAllMembres();
                 clearFields();
                 membreSelectionne = null;
@@ -316,7 +370,8 @@ public class MembreController {
      */
     private void handleActiverDesactiver(Membre membre) {
         try {
-            bibliothequeService.activerDesactiver(membre.getId());
+            membre.setActif(!membre.isActif());
+            membreDAO.update(membre);
             loadAllMembres();
             showMessage("Statut du membre modifié avec succès", Alert.AlertType.INFORMATION);
         } catch (SQLException e) {
@@ -333,7 +388,21 @@ public class MembreController {
         
         try {
             membresList.clear();
-            membresList.addAll(bibliothequeService.rechercherMembres(critere));
+            List<Membre> tousLesMembres = membreDAO.findAll();
+            
+            if (critere.isEmpty()) {
+                membresList.addAll(tousLesMembres);
+            } else {
+                String critereLower = critere.toLowerCase();
+                List<Membre> resultats = tousLesMembres.stream()
+                    .filter(m -> 
+                        m.getNom().toLowerCase().contains(critereLower) ||
+                        m.getPrenom().toLowerCase().contains(critereLower) ||
+                        m.getEmail().toLowerCase().contains(critereLower)
+                    )
+                    .collect(Collectors.toList());
+                membresList.addAll(resultats);
+            }
             messageLabel.setText("Résultats: " + membresList.size() + " membre(s) trouvé(s)");
         } catch (SQLException e) {
             showMessage("Erreur lors de la recherche: " + e.getMessage(), Alert.AlertType.ERROR);
