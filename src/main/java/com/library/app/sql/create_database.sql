@@ -11,10 +11,20 @@ CREATE TABLE IF NOT EXISTS livres (
     disponible BOOLEAN DEFAULT TRUE
 );
 
-/* TABLE MEMBRE — hatim */
-CREATE TABLE membre (
-    id INT PRIMARY KEY AUTO_INCREMENT
+/* TABLE MEMBRES — hatim */
+CREATE TABLE IF NOT EXISTS membres (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    actif BOOLEAN DEFAULT TRUE
 );
+
+/* INSERT de test pour les membres */
+INSERT INTO membres (nom, prenom, email, actif) VALUES
+('Dupont', 'Jean', 'jean.dupont@email.com', TRUE),
+('Martin', 'Sophie', 'sophie.martin@email.com', TRUE),
+('Bernard', 'Pierre', 'pierre.bernard@email.com', FALSE);
 
 /* TABLE EMPRUNT — hakim */
 CREATE TABLE emprunt (

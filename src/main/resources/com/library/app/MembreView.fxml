@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx" 
+            xmlns:fx="http://javafx.com/fxml" 
+            fx:controller="com.library.app.controller.MembreController">
+    
+    <top>
+        <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 20;">
+            <Label text="Gestion des Membres" style="-fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: bold;" />
+            <Label text="Module de gestion des membres de la bibliothèque" style="-fx-text-fill: #ecf0f1;" />
+        </VBox>
+    </top>
+    
+    <center>
+        <SplitPane dividerPositions="0.6" orientation="VERTICAL">
+            
+            <!-- Partie supérieure : Formulaire et Liste des membres -->
+            <VBox spacing="20" style="-fx-padding: 20;">
+                
+                <!-- Formulaire -->
+                <GridPane hgap="10" vgap="10" style="-fx-padding: 15; -fx-background-color: white; -fx-border-color: #ddd;">
+                    <Label text="Formulaire Membre" GridPane.columnIndex="0" GridPane.rowIndex="0" 
+                           GridPane.columnSpan="4" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                    
+                    <Label text="Nom:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <TextField fx:id="nomField" GridPane.columnIndex="1" GridPane.rowIndex="1" 
+                               GridPane.columnSpan="3" />
+                    
+                    <Label text="Prénom:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                    <TextField fx:id="prenomField" GridPane.columnIndex="1" GridPane.rowIndex="2" 
+                               GridPane.columnSpan="3" />
+                    
+                    <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                    <TextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="3" 
+                               GridPane.columnSpan="3" />
+                    
+                    <HBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="4" 
+                          GridPane.columnSpan="4" style="-fx-padding: 10 0 0 0;">
+                        <Button fx:id="ajouterButton" text="Ajouter" onAction="#handleAjouterMembre" 
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white;" />
+                        <Button fx:id="modifierButton" text="Modifier" onAction="#handleModifierMembre" 
+                                style="-fx-background-color: #f39c12; -fx-text-fill: white;" 
+                                disable="true" />
+                        <Button fx:id="supprimerButton" text="Supprimer" onAction="#handleSupprimerMembre" 
+                                style="-fx-background-color: #e74c3c; -fx-text-fill: white;" 
+                                disable="true" />
+                        <Button text="Effacer" onAction="#handleClearFields" 
+                                style="-fx-background-color: #7f8c8d; -fx-text-fill: white;" />
+                    </HBox>
+                </GridPane>
+                
+                <!-- Recherche -->
+                <GridPane hgap="10" vgap="10" style="-fx-padding: 15; -fx-background-color: white; -fx-border-color: #ddd;">
+                    <Label text="Recherche" GridPane.columnIndex="0" GridPane.rowIndex="0" 
+                           style="-fx-font-weight: bold;" />
+                    
+                    <TextField fx:id="searchField" GridPane.columnIndex="1" GridPane.rowIndex="0" 
+                               promptText="Nom, prénom ou email..." GridPane.columnSpan="2" />
+                    <Button text="Rechercher" onAction="#handleRechercher" 
+                            style="-fx-background-color: #3498db; -fx-text-fill: white;" 
+                            GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                    
+                    <Label fx:id="messageLabel" GridPane.columnIndex="0" GridPane.rowIndex="1" 
+                           GridPane.columnSpan="4" />
+                </GridPane>
+                
+                <!-- Table des membres -->
+                <VBox spacing="10">
+                    <Label text="Liste des Membres" style="-fx-font-weight: bold;" />
+                    <TableView fx:id="membresTable">
+                        <columns>
+                            <TableColumn fx:id="idColumn" text="ID" prefWidth="60" />
+                            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="150" />
+                            <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="150" />
+                            <TableColumn fx:id="emailColumn" text="Email" prefWidth="250" />
+                            <TableColumn fx:id="statutColumn" text="Statut" prefWidth="80" />
+                            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="120" />
+                        </columns>
+                    </TableView>
+                </VBox>
+                
+            </VBox>
+            
+            <!-- Partie inférieure : Historique des emprunts -->
+            <VBox spacing="10" style="-fx-padding: 20;">
+                <Label text="Historique des Emprunts" style="-fx-font-weight: bold;" />
+                <TableView fx:id="historiqueTable">
+                    <columns>
+                        <TableColumn fx:id="empruntIdColumn" text="ID Emprunt" prefWidth="100" />
+                        <TableColumn fx:id="livreColumn" text="Livre" prefWidth="300" />
+                        <TableColumn fx:id="dateEmpruntColumn" text="Date Emprunt" prefWidth="150" />
+                        <TableColumn fx:id="dateRetourColumn" text="Date Retour" prefWidth="200" />
+                    </columns>
+                </TableView>
+                <Label text="Sélectionnez un membre pour voir son historique d'emprunts" 
+                       style="-fx-text-fill: #7f8c8d; -fx-font-style: italic;" />
+            </VBox>
+            
+        </SplitPane>
+    </center>
+    
+</BorderPane>
+
