@@ -22,9 +22,11 @@ CREATE TABLE IF NOT EXISTS membres (
 
 /* INSERT de test pour les membres */
 INSERT INTO membres (nom, prenom, email, actif) VALUES
-('Dupont', 'Jean', 'jean.dupont@email.com', TRUE),
-('Martin', 'Sophie', 'sophie.martin@email.com', TRUE),
-('Bernard', 'Pierre', 'pierre.bernard@email.com', FALSE);
+('hatim', 'hatim', 'hatim@email.com', TRUE),
+('brahim', 'hatim', 'hatim@email.com', TRUE),
+('hakim', 'hakim', 'hakim@email.com', FALSE);
+('youssef', 'youssef', 'youssef@email.com', FALSE);
+
 
 /* TABLE EMPRUNT — hakim */
 CREATE TABLE emprunt (
