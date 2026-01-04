@@ -55,3 +55,10 @@ CREATE TABLE emprunts (
         REFERENCES membres(id)
         ON DELETE CASCADE
 );
+/* INSERT de test pour les emprunts */
+INSERT INTO `emprunts` (`id`, `livre_id`, `membre_id`, `date_emprunt`, `date_retour_prevue`, `date_retour_effective`) VALUES
+(14, 'LIV001', 1, '2026-01-04', '2026-01-18', NULL),
+(15, 'LIV002', 1, '2026-01-04', '2026-01-18', NULL),
+(16, 'LIV003', 1, '2026-01-04', '2026-01-18', NULL),
+(17, 'LIV004', 2, '2026-01-04', '2026-01-18', NULL);
+
