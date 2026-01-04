@@ -10,6 +10,7 @@ import java.util.*;
 public class EmpruntService {
 
     private final EmpruntDAO empruntDAO = new EmpruntDAOImpl();
+    private final LivreDAO livreDAO = new com.library.app.dao.impl.LivreDAOImpl();
 
     public Emprunt emprunterLivre(Livre livre, Membre membre)
             throws LivreIndisponibleException,
@@ -51,17 +52,20 @@ public class EmpruntService {
         e.setMembre(membre);
         e.setDateEmprunt(now);
         e.setDateRetourPrevue(dateRetourPrevue);
-
-        empruntDAO.save(e);
         livre.emprunter();
+        livreDAO.update(livre);
+        empruntDAO.save(e);
+        
 
         return e;
     }
 
     public void retournerLivre(Emprunt emprunt) {
         emprunt.setDateRetourEffective(new Date());
+        Livre livre = emprunt.getLivre();
+        livre.retourner();
+        livreDAO.update(livre);    
         empruntDAO.update(emprunt);
-        emprunt.getLivre().retourner();
     }
 
     public List<Emprunt> getEmpruntsEnCours() {
