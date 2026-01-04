@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class LivreController {
     @FXML private TableView<Livre> livresTable;
+    @FXML private TableColumn<Livre, String> idColumn;
     @FXML private TableColumn<Livre, String> titreColumn, auteurColumn, isbnColumn;
     @FXML private TableColumn<Livre, Integer> anneeColumn;
     @FXML private TableColumn<Livre, Boolean> disponibleColumn;
@@ -23,6 +24,7 @@ public class LivreController {
     
     @FXML
     public void initialize() {
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         titreColumn.setCellValueFactory(new PropertyValueFactory<>("titre"));
         auteurColumn.setCellValueFactory(new PropertyValueFactory<>("auteur"));
         anneeColumn.setCellValueFactory(new PropertyValueFactory<>("anneePublication"));

@@ -1,34 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox spacing="10" xmlns="http://javafx.com/javafx" 
+<VBox spacing="15" xmlns="http://javafx.com/javafx" 
       xmlns:fx="http://javafx.com/fxml" 
       fx:controller="com.library.app.controller.LivreController">
+          <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+</padding>
+
+    <Label text="Gestion des livres" style="-fx-font-size:20px; -fx-font-weight:bold;"/>
+    <VBox spacing="10" style="-fx-padding:10; -fx-background-color:#f5f5f5; -fx-background-radius:5;">
+        <Label text="Formulaire" style="-fx-font-size:14px; -fx-font-weight:bold;"/>
     
-    <HBox spacing="10">
-        <TextField fx:id="titreField" promptText="Titre"/>
-        <TextField fx:id="auteurField" promptText="Auteur"/>
-        <TextField fx:id="anneeField" promptText="Année"/>
-        <TextField fx:id="isbnField" promptText="ISBN"/>
-        <Button text="Ajouter" onAction="#handleAjouterLivre"/>
-        <Button text="Modifier" onAction="#handleModifierLivre"/>
-        <Button text="Supprimer" onAction="#handleSupprimerLivre"/>
-        <Button text="Effacer" onAction="#handleClearFields"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Titre:" prefWidth="80"/>
+            <TextField fx:id="titreField" prefWidth="250"/>
+            
+            <Label text="Auteur:" prefWidth="80"/>
+            <TextField fx:id="auteurField" prefWidth="200"/>
+        </HBox>
+        
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="ISBN:" prefWidth="80"/>
+            <TextField fx:id="isbnField" prefWidth="200"/>
+            
+            <Label text="Année:" prefWidth="80"/>
+            <TextField fx:id="anneeField" prefWidth="100"/>
+        </HBox>
+        
+        <HBox spacing="10">
+            <Button text="Ajouter" onAction="#handleAjouterLivre" style="-fx-background-color:#4CAF50; -fx-text-fill:white;"/>
+            <Button text="Modifier" onAction="#handleModifierLivre" style="-fx-background-color:#2196F3; -fx-text-fill:white;"/>
+            <Button text="Supprimer" onAction="#handleSupprimerLivre" style="-fx-background-color:#f44336; -fx-text-fill:white;"/>
+            <Button text="Effacer" onAction="#handleClearFields" style="-fx-background-color:#9E9E9E; -fx-text-fill:white;"/>
+        </HBox>
+    </VBox>
+    
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Rechercher par:"/>
+        <ComboBox fx:id="searchCriteria" prefWidth="120"/>
+        <TextField fx:id="searchField" prefWidth="300" promptText="Entrez votre recherche..."/>
+        <Button text="Rechercher" onAction="#handleRechercher" style="-fx-background-color:#FF9800; -fx-text-fill:white;"/>
     </HBox>
-    
-    <HBox spacing="10">
-        <ComboBox fx:id="searchCriteria" prefWidth="100"/>
-        <TextField fx:id="searchField" promptText="Recherche"/>
-        <Button text="Rechercher" onAction="#handleRechercher"/>
-    </HBox>
-    
-    <Label fx:id="statsLabel"/>
-    
-    <TableView fx:id="livresTable" onMouseClicked="#handleTableSelection">
+
+    <Label fx:id="statsLabel" text="Total: 0 | Disponibles: 0" style="-fx-font-size:12px;"/>
+    <Label text="Liste des livres" style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+
+    <TableView fx:id="livresTable" prefHeight="300" onMouseClicked="#handleTableSelection">
         <columns>
-            <TableColumn fx:id="titreColumn" text="Titre" prefWidth="200"/>
-            <TableColumn fx:id="auteurColumn" text="Auteur" prefWidth="150"/>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="100"/>
+            <TableColumn fx:id="titreColumn" text="Titre" prefWidth="250"/>
+            <TableColumn fx:id="auteurColumn" text="Auteur" prefWidth="200"/>
             <TableColumn fx:id="anneeColumn" text="Année" prefWidth="80"/>
             <TableColumn fx:id="isbnColumn" text="ISBN" prefWidth="150"/>
             <TableColumn fx:id="disponibleColumn" text="Disponible" prefWidth="100"/>
