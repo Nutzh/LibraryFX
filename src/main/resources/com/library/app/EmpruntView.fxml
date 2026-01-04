@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.library.app.controller.EmpruntController">
+
+    <top>
+        <VBox spacing="10" padding="10">
+            <Label text="Gestion des emprunts" style="-fx-font-size: 18px;" />
+
+            <HBox spacing="10">
+                <Label text="Livre ID :" />
+                <TextField fx:id="txtLivreId" />
+
+                <Label text="Membre ID :" />
+                <TextField fx:id="txtMembreId" />
+
+                <Button text="Emprunter"
+                        onAction="#handleEmprunter" />
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="tableEmprunts">
+            <columns>
+                <TableColumn fx:id="colId" text="ID" />
+                <TableColumn fx:id="colLivre" text="Livre" />
+                <TableColumn fx:id="colMembre" text="Membre" />
+                <TableColumn fx:id="colDateRetour" text="Retour prévu" />
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" padding="10">
+            <Button text="Retourner le livre"
+                    onAction="#handleRetourner" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

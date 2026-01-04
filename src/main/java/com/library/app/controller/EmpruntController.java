@@ -6,6 +6,11 @@ import com.library.app.model.Membre;
 import com.library.app.service.EmpruntService;
 import com.library.app.service.BibliothequeService;
 
+import com.library.app.exception.ValidationException;
+import com.library.app.exception.LivreIndisponibleException;
+import com.library.app.exception.MembreInactifException;
+import com.library.app.exception.LimiteEmpruntDepasseeException;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
@@ -23,13 +28,14 @@ public class EmpruntController {
     @FXML private TableColumn<Emprunt, String> colDateRetour;
 
     private final EmpruntService empruntService = new EmpruntService();
-    private final BibliothequeService livreService = new BibliothequeService();
+    private final BibliothequeService bibliothequeService = new BibliothequeService();
 
     private final ObservableList<Emprunt> emprunts =
             FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
+
         colId.setCellValueFactory(data ->
                 new javafx.beans.property.SimpleIntegerProperty(
                         data.getValue().getId()
@@ -56,19 +62,48 @@ public class EmpruntController {
     @FXML
     private void handleEmprunter() {
         try {
-            int livreId = Integer.parseInt(txtLivreId.getText());
-            int membreId = Integer.parseInt(txtMembreId.getText());
+            String livreId = txtLivreId.getText().trim();
+            String membreIdText = txtMembreId.getText().trim();
 
-            Livre livre = BibliothequeService.rechercherLivres(livreId);
-            Membre membre = BibliothequeService.rechercherMembre(membreId);
+            if (livreId.isEmpty() || membreIdText.isEmpty()) {
+                throw new ValidationException("Tous les champs sont obligatoires");
+            }
 
+            int membreId = Integer.parseInt(membreIdText);
+
+            // Recherche du livre
+            Livre livre = bibliothequeService.getAllLivres().stream()
+                    .filter(l -> l.getId().equals(livreId))
+                    .findFirst()
+                    .orElseThrow(() ->
+                            new ValidationException("Livre introuvable"));
+
+            // Recherche du membre
+            Membre membre = bibliothequeService.rechercherMembres("")
+                    .stream()
+                    .filter(m -> m.getId() == membreId)
+                    .findFirst()
+                    .orElseThrow(() ->
+                            new ValidationException("Membre introuvable"));
+
+            // Appel métier
             empruntService.emprunterLivre(livre, membre);
 
             showInfo("Emprunt effectué avec succès");
             refreshTable();
 
-        } catch (Exception e) {
+        } catch (ValidationException |
+                 LivreIndisponibleException |
+                 MembreInactifException |
+                 LimiteEmpruntDepasseeException e) {
+
             showError(e.getMessage());
+
+        } catch (NumberFormatException e) {
+            showError("ID du membre invalide");
+
+        } catch (Exception e) {
+            showError("Erreur inattendue : " + e.getMessage());
         }
     }
 
@@ -81,9 +116,14 @@ public class EmpruntController {
             return;
         }
 
-        empruntService.retournerLivre(selected);
-        showInfo("Livre retourné");
-        refreshTable();
+        try {
+            empruntService.retournerLivre(selected);
+            showInfo("Livre retourné");
+            refreshTable();
+
+        } catch (Exception e) {
+            showError(e.getMessage());
+        }
     }
 
     private void refreshTable() {
