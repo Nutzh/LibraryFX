@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS membres (
 INSERT INTO membres (nom, prenom, email, actif) VALUES
 ('hatim', 'ouayed', 'hatim@email.com', TRUE),
 ('brahim', 'mekaoui', 'brahim@email.com', TRUE),
-('hakim', 'benatti', 'hakim@email.com', FALSE);
+('hakim', 'benatti', 'hakim@email.com', FALSE),
 ('youssef', 'khouya', 'youssef@email.com', FALSE);
 
 

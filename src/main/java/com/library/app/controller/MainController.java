@@ -2,10 +2,8 @@ package com.library.app.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.StackPane;
 import javafx.scene.Parent;
-
-import java.io.IOException;
+import javafx.scene.layout.StackPane;
 
 public class MainController {
 
@@ -14,26 +12,31 @@ public class MainController {
 
     private void loadView(String viewName) {
         try {
-            Parent view = FXMLLoader.load(getClass().getResource("/com/library/app/" + viewName));
+            var url = getClass().getResource("/com/library/app/" + viewName);
+            if (url == null) {
+                throw new RuntimeException("FXML not found: " + viewName);
+            }
+            Parent view = FXMLLoader.load(url);
             contentArea.getChildren().setAll(view);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Menu actions 
     @FXML
     public void showLivres() {
-        loadView("livre_view.fxml");     // Brahim
+        System.out.println("Loading LivreView.fxml");
+        loadView("LivreView.fxml");
     }
 
     @FXML
     public void showMembres() {
-        loadView("membre_view.fxml");    // Hatim
+        loadView("MembreView.fxml");
     }
 
     @FXML
     public void showEmprunts() {
-        loadView("emprunt_view.fxml");   // Hakim
+        System.out.println("Emprunts clicked");
+        loadView("EmpruntView.fxml");
     }
 }
