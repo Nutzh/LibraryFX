@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.library.app.controller.MembreController"
+      spacing="15">
+
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
+
+    <Label text="Gestion des membres" style="-fx-font-size:20px; -fx-font-weight:bold;"/>
+
+    <!-- Formulaire d'ajout/modification -->
+    <VBox spacing="10" style="-fx-padding:10; -fx-background-color:#f5f5f5; -fx-background-radius:5;">
+        <Label text="Formulaire" style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label text="Nom:" prefWidth="80"/>
+            <TextField fx:id="nomField" prefWidth="200"/>
+            
+            <Label text="Prénom:" prefWidth="80"/>
+            <TextField fx:id="prenomField" prefWidth="200"/>
+            
+            <Label text="Email:" prefWidth="80"/>
+            <TextField fx:id="emailField" prefWidth="250"/>
+        </HBox>
+        
+        <HBox spacing="10">
+            <Button fx:id="ajouterButton" text="Ajouter" onAction="#handleAjouterMembre" style="-fx-background-color:#4CAF50; -fx-text-fill:white;"/>
+            <Button fx:id="modifierButton" text="Modifier" onAction="#handleModifierMembre" disable="true" style="-fx-background-color:#2196F3; -fx-text-fill:white;"/>
+            <Button fx:id="supprimerButton" text="Supprimer" onAction="#handleSupprimerMembre" disable="true" style="-fx-background-color:#f44336; -fx-text-fill:white;"/>
+            <Button text="Effacer" onAction="#handleClearFields" style="-fx-background-color:#9E9E9E; -fx-text-fill:white;"/>
+        </HBox>
+    </VBox>
+
+    <!-- Recherche -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Rechercher:"/>
+        <TextField fx:id="searchField" prefWidth="300" promptText="Nom, prénom ou email..."/>
+        <Button text="Rechercher" onAction="#handleRechercher" style="-fx-background-color:#FF9800; -fx-text-fill:white;"/>
+    </HBox>
+
+    <Label fx:id="messageLabel" text="Total: 0 membre(s)" style="-fx-font-size:12px;"/>
+
+    <!-- Table des membres -->
+    <Label text="Liste des membres" style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+    <TableView fx:id="membresTable" prefHeight="200">
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
+            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="150"/>
+            <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="150"/>
+            <TableColumn fx:id="emailColumn" text="Email" prefWidth="250"/>
+            <TableColumn fx:id="statutColumn" text="Statut" prefWidth="100"/>
+            <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="120"/>
+        </columns>
+    </TableView>
+
+    <!-- Historique des emprunts -->
+    <Label text="Historique des emprunts" style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+    <TableView fx:id="historiqueTable" prefHeight="150">
+        <columns>
+            <TableColumn fx:id="empruntIdColumn" text="ID Emprunt" prefWidth="100"/>
+            <TableColumn fx:id="livreColumn" text="Livre" prefWidth="250"/>
+            <TableColumn fx:id="dateEmpruntColumn" text="Date Emprunt" prefWidth="150"/>
+            <TableColumn fx:id="dateRetourColumn" text="Date Retour" prefWidth="200"/>
+        </columns>
+    </TableView>
+
+</VBox>
+
