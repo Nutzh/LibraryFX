@@ -1,17 +1,22 @@
 package com.library.app.dao.impl;
 
 import com.library.app.dao.EmpruntDAO;
-import com.library.app.model.*;
+import com.library.app.dao.LivreDAO;
+ import com.library.app.dao.MembreDAO;
+ import com.library.app.model.Emprunt;
+ import com.library.app.model.Livre;
+ import com.library.app.model.Membre;
 import com.library.app.util.DatabaseConnection;
 
 import java.sql.*;
-import java.util.*;
+ import java.util.ArrayList;
+import java.util.List;
 
 public class EmpruntDAOImpl implements EmpruntDAO {
 
-    private final Connection connection =
-            DatabaseConnection.getConnection();
-
+    private final Connection connection = DatabaseConnection.getConnection();
+    private final LivreDAO livreDAO = new LivreDAOImpl();
+    private final MembreDAO membreDAO = new MembreDAOImpl();
     @Override
     public void save(Emprunt e) {
         String sql = """
@@ -40,9 +45,12 @@ public class EmpruntDAOImpl implements EmpruntDAO {
         """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setDate(1, e.getDateRetourEffective() == null
-                    ? null
-                    : new java.sql.Date(e.getDateRetourEffective().getTime()));
+           if (e.getDateRetourEffective() == null) {
+                ps.setNull(1, Types.DATE);
+            } else {
+                ps.setDate(1,
+                        new java.sql.Date(e.getDateRetourEffective().getTime()));
+            }
             ps.setInt(2, e.getId());
             ps.executeUpdate();
         } catch (SQLException ex) {
@@ -64,6 +72,12 @@ public class EmpruntDAOImpl implements EmpruntDAO {
                 e.setDateEmprunt(rs.getDate("date_emprunt"));
                 e.setDateRetourPrevue(rs.getDate("date_retour_prevue"));
                 e.setDateRetourEffective(rs.getDate("date_retour_effective"));
+                Livre livre = livreDAO.findById(rs.getString("livre_id"));
+                Membre membre = membreDAO.findById(
+                        String.valueOf(rs.getInt("membre_id")));
+
+                e.setLivre(livre);
+                e.setMembre(membre);
                 return e;
             }
         } catch (SQLException ex) {
@@ -86,6 +100,12 @@ public class EmpruntDAOImpl implements EmpruntDAO {
                 e.setDateEmprunt(rs.getDate("date_emprunt"));
                 e.setDateRetourPrevue(rs.getDate("date_retour_prevue"));
                 e.setDateRetourEffective(rs.getDate("date_retour_effective"));
+                Livre livre = livreDAO.findById(rs.getString("livre_id"));
+                Membre membre = membreDAO.findById(
+                        String.valueOf(rs.getInt("membre_id")));
+
+                e.setLivre(livre);
+                e.setMembre(membre);
                 list.add(e);
             }
         } catch (SQLException ex) {
@@ -111,6 +131,12 @@ public class EmpruntDAOImpl implements EmpruntDAO {
                 e.setId(rs.getInt("id"));
                 e.setDateEmprunt(rs.getDate("date_emprunt"));
                 e.setDateRetourPrevue(rs.getDate("date_retour_prevue"));
+                Livre livre = livreDAO.findById(rs.getString("livre_id"));
+                Membre membre = membreDAO.findById(
+                        String.valueOf(rs.getInt("membre_id")));
+
+                e.setLivre(livre);
+                e.setMembre(membre);
                 list.add(e);
             }
         } catch (SQLException ex) {
@@ -135,6 +161,11 @@ public class EmpruntDAOImpl implements EmpruntDAO {
                 e.setDateEmprunt(rs.getDate("date_emprunt"));
                 e.setDateRetourPrevue(rs.getDate("date_retour_prevue"));
                 e.setDateRetourEffective(rs.getDate("date_retour_effective"));
+                Livre livre = livreDAO.findById(rs.getString("livre_id"));
+                Membre membre = membreDAO.findById(String.valueOf(membreId));
+
+                e.setLivre(livre);
+                e.setMembre(membre);
                 list.add(e);
             }
         } catch (SQLException ex) {
