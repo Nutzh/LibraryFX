@@ -1,5 +1,8 @@
 package com.library.app.model;
+import java.util.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 public class Livre extends Document implements Empruntable {
     private String auteur;
@@ -32,14 +35,27 @@ public class Livre extends Document implements Empruntable {
     }
     
     @Override
-    public double calculerPenaliteRetard(LocalDate dateRetourPrevue,LocalDate dateRetourEffective) {
-        if (dateRetourPrevue == null) return 0;
-        if (dateRetourPrevue.isBefore(dateRetourEffective)) {
-            long joursRetard = java.time.temporal.ChronoUnit.DAYS.between(dateRetourPrevue, dateRetourEffective);
-            return joursRetard * 5.0; // 5 DH par jour de retard
-        }
+    public double calculerPenaliteRetard(Date dateRetourPrevue, Date dateRetourEffective) {
+    if (dateRetourPrevue == null || dateRetourEffective == null) {
         return 0;
     }
+    
+    // Conversion de java.util.Date en java.time.LocalDate
+    LocalDate datePrevue = dateRetourPrevue.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
+    
+    LocalDate dateEffective = dateRetourEffective.toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
+    
+    if (dateEffective.isAfter(datePrevue)) {
+        long joursRetard = ChronoUnit.DAYS.between(datePrevue, dateEffective);
+        return joursRetard * 5.0; // 5 DH par jour de retard
+    }
+    
+    return 0;
+}
     
     public String getAuteur() {
         return auteur;

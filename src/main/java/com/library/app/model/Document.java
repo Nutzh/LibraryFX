@@ -1,6 +1,6 @@
 package com.library.app.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 public abstract class Document {
     protected String id;
@@ -29,5 +29,5 @@ public abstract class Document {
         this.titre = titre;
     }
     
-    public abstract double calculerPenaliteRetard(LocalDate dateRetourPrevue, LocalDate dateRetourEffective);
+    public abstract double calculerPenaliteRetard(Date dateRetourPrevue, Date dateRetourEffective);
 }
