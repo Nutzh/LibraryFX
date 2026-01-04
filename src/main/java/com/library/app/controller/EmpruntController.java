@@ -15,17 +15,25 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.application.Platform;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
 
 public class EmpruntController {
 
-    @FXML private TextField txtLivreId;
-    @FXML private TextField txtMembreId;
+    @FXML private TextField txtLivreId;  
+    @FXML private TextField txtMembreId;  
+    @FXML private DatePicker dateRetourPrevue;
 
     @FXML private TableView<Emprunt> tableEmprunts;
     @FXML private TableColumn<Emprunt, Integer> colId;
     @FXML private TableColumn<Emprunt, String> colLivre;
     @FXML private TableColumn<Emprunt, String> colMembre;
     @FXML private TableColumn<Emprunt, String> colDateRetour;
+    @FXML private TableColumn<Emprunt, String> colPenalite;
 
     private final EmpruntService empruntService = new EmpruntService();
     private final BibliothequeService bibliothequeService = new BibliothequeService();
@@ -36,25 +44,32 @@ public class EmpruntController {
     @FXML
     public void initialize() {
 
-        colId.setCellValueFactory(data ->
+        colId.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleIntegerProperty(
-                        data.getValue().getId()
-                ).asObject());
+                        c.getValue().getId()).asObject());
 
-        colLivre.setCellValueFactory(data ->
+        colLivre.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getLivre().getTitre()
-                ));
+                        c.getValue().getLivre().getTitre()));
 
-        colMembre.setCellValueFactory(data ->
+        colMembre.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getMembre().getNom()
-                ));
+                        c.getValue().getMembre().getNom()));
 
-        colDateRetour.setCellValueFactory(data ->
+        colDateRetour.setCellValueFactory(c ->
                 new javafx.beans.property.SimpleStringProperty(
-                        data.getValue().getDateRetourPrevue().toString()
-                ));
+                        c.getValue().getDateRetourPrevue().toString()));
+
+        colPenalite.setCellValueFactory(c -> {
+            double p = empruntService.calculerPenalite(c.getValue());
+            return new javafx.beans.property.SimpleStringProperty(
+                    String.format("%.2f DH", p));
+        });
+
+        tableEmprunts.setItems(emprunts);
+        tableEmprunts.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        dateRetourPrevue.setValue(LocalDate.now().plusDays(14));
 
         refreshTable();
     }
@@ -65,43 +80,55 @@ public class EmpruntController {
             String livreId = txtLivreId.getText().trim();
             String membreIdText = txtMembreId.getText().trim();
 
-            if (livreId.isEmpty() || membreIdText.isEmpty()) {
-                throw new ValidationException("Tous les champs sont obligatoires");
-            }
+            if (livreId.isEmpty())
+                throw new ValidationException("Veuillez entrer l'ID du livre");
 
-            int membreId = Integer.parseInt(membreIdText);
+            if (membreIdText.isEmpty())
+                throw new ValidationException("Veuillez entrer l'ID du membre");
 
-            // Recherche du livre
-            Livre livre = bibliothequeService.getAllLivres().stream()
-                    .filter(l -> l.getId().equals(livreId))
+            Livre livre = bibliothequeService.getAllLivres()
+                    .stream()
+                    .filter(l -> livreId.equals(l.getId()))
                     .findFirst()
                     .orElseThrow(() ->
                             new ValidationException("Livre introuvable"));
 
-            // Recherche du membre
+            if (!livre.isDisponible())
+                throw new LivreIndisponibleException("Livre indisponible");
+
+            int membreId = Integer.parseInt(membreIdText);
+
             Membre membre = bibliothequeService.rechercherMembres("")
                     .stream()
                     .filter(m -> m.getId() == membreId)
                     .findFirst()
                     .orElseThrow(() ->
                             new ValidationException("Membre introuvable"));
+            if (!membre.isActif()) {
+                throw new MembreInactifException("Membre inactif");
+}
+            LocalDate retour = dateRetourPrevue.getValue();
+            if (retour == null) {
+                retour = LocalDate.now().plusDays(14);
+            }
 
-            // Appel métier
-            empruntService.emprunterLivre(livre, membre);
+            Date dateRetour = Date.from(
+                    retour.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-            showInfo("Emprunt effectué avec succès");
+            empruntService.emprunterLivre(livre, membre, dateRetour);
+
+            txtLivreId.clear();
+            txtMembreId.clear();
+            dateRetourPrevue.setValue(LocalDate.now().plusDays(14));
+
             refreshTable();
+            showInfo("Emprunt effectué avec succès");
 
         } catch (ValidationException |
                  LivreIndisponibleException |
                  MembreInactifException |
                  LimiteEmpruntDepasseeException e) {
-
             showError(e.getMessage());
-
-        } catch (NumberFormatException e) {
-            showError("ID du membre invalide");
-
         } catch (Exception e) {
             showError("Erreur inattendue : " + e.getMessage());
         }
@@ -109,26 +136,23 @@ public class EmpruntController {
 
     @FXML
     private void handleRetourner() {
-        Emprunt selected = tableEmprunts.getSelectionModel().getSelectedItem();
-
-        if (selected == null) {
+        Emprunt e = tableEmprunts.getSelectionModel().getSelectedItem();
+        if (e == null) {
             showError("Veuillez sélectionner un emprunt");
             return;
         }
 
-        try {
-            empruntService.retournerLivre(selected);
-            showInfo("Livre retourné");
-            refreshTable();
-
-        } catch (Exception e) {
-            showError(e.getMessage());
-        }
+        empruntService.retournerLivre(e);
+        refreshTable();
+        showInfo("Livre retourné");
     }
 
     private void refreshTable() {
-        emprunts.setAll(empruntService.getEmpruntsEnRetard());
-        tableEmprunts.setItems(emprunts);
+        List<Emprunt> list = empruntService.getEmpruntsEnCours();
+        Platform.runLater(() -> {
+            emprunts.setAll(list);
+            tableEmprunts.refresh();
+        });
     }
 
     private void showInfo(String msg) {

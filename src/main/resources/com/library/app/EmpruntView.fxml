@@ -2,42 +2,70 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.library.app.controller.EmpruntController">
 
     <top>
-        <VBox spacing="10" padding="10">
-            <Label text="Gestion des emprunts" style="-fx-font-size: 18px;" />
+        <VBox spacing="15" style="-fx-background-color:#f5f5f5;">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
 
-            <HBox spacing="10">
-                <Label text="Livre ID :" />
-                <TextField fx:id="txtLivreId" />
+            <Label text="Gestion des emprunts"
+                   style="-fx-font-size:20px; -fx-font-weight:bold;"/>
 
-                <Label text="Membre ID :" />
-                <TextField fx:id="txtMembreId" />
+            <VBox spacing="10" style="-fx-padding:10; -fx-background-color:white;">
+                <Label text="Nouvel emprunt"
+                       style="-fx-font-size:14px; -fx-font-weight:bold;"/>
 
-                <Button text="Emprunter"
-                        onAction="#handleEmprunter" />
-            </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Livre ID:" prefWidth="80"/>
+                    <TextField fx:id="txtLivreId"
+                               promptText="ID du livre (String)"
+                               prefWidth="150"/>
+
+                    <Label text="Membre ID:" prefWidth="90"/>
+                    <TextField fx:id="txtMembreId"
+                               promptText="ID du membre"
+                               prefWidth="150"/>
+
+                    <Label text="Retour prévu:" prefWidth="100"/>
+                    <DatePicker fx:id="dateRetourPrevue"
+                                prefWidth="160"/>
+
+                    <Button text="Emprunter"
+                            onAction="#handleEmprunter"
+                            style="-fx-background-color:#4CAF50; -fx-text-fill:white;"/>
+                </HBox>
+            </VBox>
         </VBox>
     </top>
 
     <center>
-        <TableView fx:id="tableEmprunts">
-            <columns>
-                <TableColumn fx:id="colId" text="ID" />
-                <TableColumn fx:id="colLivre" text="Livre" />
-                <TableColumn fx:id="colMembre" text="Membre" />
-                <TableColumn fx:id="colDateRetour" text="Retour prévu" />
-            </columns>
-        </TableView>
+        <VBox spacing="10" style="-fx-padding:15;">
+            <Label text="Liste des emprunts"
+                   style="-fx-font-size:14px; -fx-font-weight:bold;"/>
+
+            <TableView fx:id="tableEmprunts" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID"/>
+                    <TableColumn fx:id="colLivre" text="Livre"/>
+                    <TableColumn fx:id="colMembre" text="Membre"/>
+                    <TableColumn fx:id="colDateRetour" text="Retour prévu"/>
+                    <TableColumn fx:id="colPenalite" text="Pénalité"/>
+                </columns>
+            </TableView>
+        </VBox>
     </center>
 
     <bottom>
-        <HBox spacing="10" padding="10">
+        <HBox spacing="10" style="-fx-padding:15; -fx-background-color:#f5f5f5;">
             <Button text="Retourner le livre"
-                    onAction="#handleRetourner" />
+                    onAction="#handleRetourner"
+                    style="-fx-background-color:#f44336; -fx-text-fill:white;"/>
         </HBox>
     </bottom>
 
