@@ -38,7 +38,7 @@ INSERT INTO membres (nom, prenom, email, actif) VALUES
 CREATE TABLE emprunts (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
-    livre_id INT NOT NULL,
+    livre_id VARCHAR(50) NOT NULL,
     membre_id INT NOT NULL,
 
     date_emprunt DATE NOT NULL,
