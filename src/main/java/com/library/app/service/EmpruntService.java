@@ -71,16 +71,7 @@ public class EmpruntService {
     public List<Emprunt> getEmpruntsEnCours() {
         return empruntDAO.findEnCours();
     }
-
-    public List<Emprunt> getEmpruntsEnRetard() {
-        Date today = new Date();
-
-        return empruntDAO.findEnCours()
-                .stream()
-                .filter(e -> e.getDateRetourPrevue().before(today))
-                .toList();
-    }
-    
+   
     public double calculerPenalite(Emprunt emprunt) {
         if (emprunt.getDateRetourEffective() == null) {
             // Si pas encore retourné, calculer la pénalité basée sur aujourd'hui
